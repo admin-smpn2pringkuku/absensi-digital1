@@ -147,7 +147,6 @@
     <audio id="beepSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
     <script>
-        // CONFIG
         const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxPQ7KibCua6RpF0mia_rzNoCd7dWoX61mOAJUhllaJ9L2qTqhaukl_o3Mef69dmnyq/exec';
         
         const DATA_MASTER = [
@@ -226,7 +225,6 @@
         let attendanceData = JSON.parse(localStorage.getItem('absensi_data')) || [];
         let showAllLogs = false;
 
-        // AUTH
         document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
             if(document.getElementById('username').value === 'admin' && document.getElementById('password').value === 'admin123') {
@@ -246,7 +244,9 @@
         function updateClock() {
             const now = new Date();
             document.getElementById('realTimeClock').innerText = now.toLocaleTimeString('id-ID');
-            document.getElementById('currentDate').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
+            document.getElementById('currentDate').innerText = now.toLocaleDateString('id-ID', { 
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+            });
         }
 
         function startScanner() {
@@ -274,9 +274,7 @@
                     const entry = { nis: s.nis, nama: s.nama, kelas: s.kelas, tgl: today, waktu: new Date().toLocaleTimeString('id-ID') };
                     attendanceData.unshift(entry);
                     localStorage.setItem('absensi_data', JSON.stringify(attendanceData));
-                    
                     fetch(GOOGLE_SHEET_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(entry) });
-
                     res.className = "mt-4 p-3 rounded-lg bg-green-100 text-green-700 font-bold";
                     res.innerText = "✅ BERHASIL: " + s.nama;
                     renderStats(); renderLogs();
@@ -285,10 +283,7 @@
             setTimeout(() => res.classList.add('hidden'), 2000);
         }
 
-        function toggleLogs() {
-            showAllLogs = !showAllLogs;
-            renderLogs();
-        }
+        function toggleLogs() { showAllLogs = !showAllLogs; renderLogs(); }
 
         function renderLogs() {
             const today = new Date().toLocaleDateString('id-ID');
@@ -351,15 +346,15 @@
             } 
         }
 
-        function resetData() { if(confirm("Hapus semua?")) { attendanceData = []; localStorage.removeItem('absensi_data'); renderStats(); renderLogs(); } }
+        function resetData() { if(confirm("Hapus semua data absensi?")) { attendanceData = []; localStorage.removeItem('absensi_data'); renderStats(); renderLogs(); } }
         
         function printFullReport() {
-            const today = new Date().toLocaleDateString('id-ID');
+            const today = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
             const win = window.open('', '_blank');
             win.document.write(`<html><head><style>table{width:100%;border-collapse:collapse;} th,td{border:1px solid black;padding:5px;text-align:left;}</style></head><body style="font-family:sans-serif"><h2>Rekapitulasi Seluruh Siswa - ${today}</h2><table>
                 <tr><th>No</th><th>Nama</th><th>Kelas</th><th>Status</th><th>Waktu</th></tr>
                 ${DATA_MASTER.map((s,i) => {
-                    const a = attendanceData.find(d => d.nis === s.nis && d.tgl === today);
+                    const a = attendanceData.find(d => d.nis === s.nis && d.tgl === new Date().toLocaleDateString('id-ID'));
                     return `<tr><td>${i+1}</td><td>${s.nama}</td><td>${s.kelas}</td><td>${a?'HADIR':'ALFA'}</td><td>${a?a.waktu:'-'}</td></tr>`;
                 }).join('')}
             </table></body></html>`);
@@ -367,19 +362,14 @@
         }
 
         function printClassDetail(className) {
-            const today = new Date().toLocaleDateString('id-ID');
+            const today = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
             const siswaKelas = DATA_MASTER.filter(s => s.kelas === className);
             const win = window.open('', '_blank');
-            win.document.write(`<html><head><style>
-                table{width:100%;border-collapse:collapse;margin-top:20px;} 
-                th,td{border:1px solid black;padding:8px;text-align:left;} 
-                .status-hadir{color:green;font-weight:bold;} 
-                .status-alfa{color:red;font-weight:bold;}
-            </style></head><body style="font-family:sans-serif;padding:20px;">
+            win.document.write(`<html><head><style>table{width:100%;border-collapse:collapse;margin-top:20px;} th,td{border:1px solid black;padding:8px;text-align:left;} .status-hadir{color:green;font-weight:bold;} .status-alfa{color:red;font-weight:bold;}</style></head><body style="font-family:sans-serif;padding:20px;">
             <div style="text-align:center"><h2>DAFTAR HADIR SISWA - KELAS ${className}</h2><p>SMP NEGERI 2 PRINGKUKU | Tanggal: ${today}</p></div>
             <table><thead><tr><th>No</th><th>NIS</th><th>Nama Siswa</th><th>Jam Masuk</th><th>Status</th></tr></thead><tbody>
             ${siswaKelas.map((s, i) => {
-                const a = attendanceData.find(d => d.nis === s.nis && d.tgl === today);
+                const a = attendanceData.find(d => d.nis === s.nis && d.tgl === new Date().toLocaleDateString('id-ID'));
                 return `<tr><td>${i+1}</td><td>${s.nis}</td><td>${s.nama}</td><td>${a ? a.waktu : '-'}</td><td class="${a?'status-hadir':'status-alfa'}">${a ? 'HADIR' : 'ALFA'}</td></tr>`;
             }).join('')}
             </tbody></table><div style="margin-top:30px;float:right;text-align:center"><p>Pringkuku, ${today}</p><br><br><br><p><b>__________________________</b><br>Wali Kelas ${className}</p></div></body></html>`);
@@ -392,76 +382,23 @@
             const currentMonth = now.getMonth() + 1;
             const currentYear = now.getFullYear();
             const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
-            
             const siswaKelas = DATA_MASTER.filter(s => s.kelas === className);
-            
             const win = window.open('', '_blank');
-            win.document.write(`
-                <html>
-                <head>
-                    <title>Rekap Bulanan ${className}</title>
-                    <style>
-                        table { width: 100%; border-collapse: collapse; font-size: 9px; margin-top: 15px; }
-                        th, td { border: 1px solid black; padding: 3px; text-align: center; }
-                        .text-left { text-align: left; padding-left: 5px; }
-                        .hadir { color: green; font-weight: bold; }
-                        .alfa { background-color: #fee2e2; }
-                        header { text-align: center; font-family: sans-serif; }
-                        @media print { @page { size: landscape; } }
-                    </style>
-                </head>
-                <body style="font-family:sans-serif; padding:10px;">
-                    <header>
-                        <h2 style="margin:0">REKAPITULASI ABSENSI BULANAN</h2>
-                        <h3 style="margin:5px 0">KELAS ${className} - ${monthNames[now.getMonth()]} ${currentYear}</h3>
-                        <p style="margin:0; font-size: 11px;">SMP NEGERI 2 PRINGKUKU</p>
-                    </header>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th rowspan="2">No</th>
-                                <th rowspan="2" style="width:150px">Nama Siswa</th>
-                                <th colspan="${daysInMonth}">Tanggal</th>
-                                <th rowspan="2">H</th>
-                            </tr>
-                            <tr>
-                                ${Array.from({length: daysInMonth}, (_, i) => `<th>${i+1}</th>`).join('')}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${siswaKelas.map((s, i) => {
-                                let totalHadir = 0;
-                                const rowDots = Array.from({length: daysInMonth}, (_, d) => {
-                                    const tglCari = `${d+1}/${currentMonth}/${currentYear}`;
-                                    // Karena format toLocaleDateString bisa berbeda-beda, kita buat pencocokan yang lebih fleksibel
-                                    const isHadir = attendanceData.some(a => a.nis === s.nis && a.tgl === tglCari);
-                                    if(isHadir) totalHadir++;
-                                    return `<td class="${isHadir ? '' : 'alfa'}">${isHadir ? '✓' : ''}</td>`;
-                                }).join('');
-                                
-                                return `
-                                    <tr>
-                                        <td>${i+1}</td>
-                                        <td class="text-left">${s.nama}</td>
-                                        ${rowDots}
-                                        <td style="font-weight:bold">${totalHadir}</td>
-                                    </tr>
-                                `;
-                            }).join('')}
-                        </tbody>
-                    </table>
-                    
-                    <div style="margin-top:20px; float:right; text-align:center; font-size: 11px;">
-                        <p>Pringkuku, ${new Date().toLocaleDateString('id-ID')}</p>
-                        <br><br><br>
-                        <p><b>__________________________</b><br>Wali Kelas ${className}</p>
-                    </div>
-                </body>
-                </html>
-            `);
-            win.document.close();
-            win.print();
+            win.document.write(`<html><head><title>Rekap Bulanan ${className}</title><style>table { width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 15px; } th, td { border: 1px solid black; padding: 4px; text-align: center; } .text-left { text-align: left; padding-left: 5px; } .alfa { background-color: #fce4e4; color: #cc0000; } header { text-align: center; font-family: sans-serif; } @media print { @page { size: landscape; } }</style></head><body style="font-family:sans-serif; padding:10px;">
+            <header><h2 style="margin:0">REKAPITULASI ABSENSI SISWA</h2><h3 style="margin:5px 0">KELAS ${className} - PERIODE ${monthNames[now.getMonth()].toUpperCase()} ${currentYear}</h3><p style="margin:0; font-size: 12px;">SMP NEGERI 2 PRINGKUKU</p></header>
+            <table><thead><tr><th rowspan="2">No</th><th rowspan="2" style="width:200px">Nama Siswa</th><th colspan="${daysInMonth}">Tanggal (Bulan ${monthNames[now.getMonth()]} ${currentYear})</th><th rowspan="2">H</th></tr><tr>${Array.from({length: daysInMonth}, (_, i) => `<th>${i+1}</th>`).join('')}</tr></thead><tbody>
+            ${siswaKelas.map((s, i) => {
+                let totalHadir = 0;
+                const rowDots = Array.from({length: daysInMonth}, (_, d) => {
+                    const tglCari = new Date(currentYear, now.getMonth(), d + 1).toLocaleDateString('id-ID');
+                    const isHadir = attendanceData.some(a => a.nis === s.nis && a.tgl === tglCari);
+                    if(isHadir) totalHadir++;
+                    return `<td class="${isHadir ? '' : 'alfa'}">${isHadir ? '✓' : '-'}</td>`;
+                }).join('');
+                return `<tr><td>${i+1}</td><td class="text-left">${s.nama}</td>${rowDots}<td style="font-weight:bold">${totalHadir}</td></tr>`;
+            }).join('')}</tbody></table>
+            <div style="margin-top:20px; float:right; text-align:center; font-size: 12px;"><p>Pringkuku, ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p><br><br><br><p><b>__________________________</b><br>Wali Kelas ${className}</p></div></body></html>`);
+            win.document.close(); win.print();
         }
     </script>
 </body>
