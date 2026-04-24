@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-Absensi Pro | SMP Negeri 2 Pringkuku</title>
-   
-<link rel="apple-touch-icon" href="https://i.imgur.com/KGNEukP.png">
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e40af">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="https://i.imgur.com/KGNEukP.png">
 
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="E-Absensi">
-    <link rel="icon" type="image/png" href="https://imgur.com/KGNEukP.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/html5-qrcode"></script>
@@ -38,7 +37,7 @@
 
     <div id="loginSection" class="min-h-screen flex items-center justify-center bg-education p-4 no-print">
         <div class="glass-card p-8 w-full max-w-md shadow-2xl text-center border border-white/20">
-            <img src="https://imgur.com/KGNEukP.png" alt="Logo" class="w-20 h-20 mx-auto mb-4 object-contain">
+            <img src="https://i.imgur.com/KGNEukP.png" alt="Logo" class="w-20 h-20 mx-auto mb-4 object-contain">
             <h1 class="text-2xl font-bold text-blue-900 mb-2">E-Absensi Pro</h1>
             <p class="text-xs text-blue-700 font-semibold mb-6 uppercase tracking-wider">SMP Negeri 2 Pringkuku</p>
             
@@ -53,7 +52,6 @@
                 </div>
                 <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow-lg mt-2">MASUK SISTEM</button>
             </form>
-            <p class="mt-6 text-[10px] text-gray-500 uppercase italic tracking-widest">P.taqin-belajar</p>
         </div>
     </div>
 
@@ -64,7 +62,6 @@
                     <div class="bg-blue-600 p-2 rounded-lg text-white shadow-md"><i class="fas fa-university"></i></div>
                     <h2 class="font-bold leading-tight">E-Absensi Pro <br><span class="text-[10px] text-gray-400 uppercase font-normal">SMPN 2 Pringkuku</span></h2>
                 </div>
-                
                 <div class="flex items-center space-x-4">
                     <div class="text-right hidden sm:block">
                         <p id="realTimeClock" class="font-bold text-blue-600 text-sm"></p>
@@ -112,15 +109,15 @@
                 </div>
 
                 <div class="lg:col-span-2">
-                    <div class="bg-white rounded-2xl shadow-sm overflow-hidden min-h-[400px] border border-gray-100">
+                    <div class="bg-white rounded-2xl shadow-sm overflow-hidden min-h-[400px] border border-gray-100 flex flex-col">
                         <div class="p-4 border-b bg-gray-50 flex flex-wrap gap-2 justify-between items-center">
                             <h3 class="font-bold text-xs uppercase text-gray-500">Log Kehadiran Hari Ini</h3>
                             <div class="flex gap-2">
-                                <button onclick="printMonthlyReport()" class="text-[10px] bg-green-600 text-white px-3 py-1.5 rounded font-bold hover:bg-green-700 shadow-sm transition">
-                                    <i class="fas fa-calendar-alt mr-1"></i> REKAP BULANAN
+                                <button id="toggleLogsBtn" onclick="toggleLogs()" class="text-[10px] bg-gray-200 text-gray-700 px-3 py-1.5 rounded font-bold hover:bg-gray-300 transition hidden">
+                                    <i class="fas fa-eye mr-1"></i> LIHAT SEMUA
                                 </button>
                                 <button onclick="printFullReport()" class="text-[10px] bg-blue-600 text-white px-3 py-1.5 rounded font-bold hover:bg-blue-700 shadow-sm transition">
-                                    <i class="fas fa-print mr-1"></i> CETAK HARIAN
+                                    <i class="fas fa-print mr-1"></i> CETAK REKAP HARIAN
                                 </button>
                             </div>
                         </div>
@@ -139,7 +136,7 @@
             <div class="no-print">
                 <hr class="mb-8 border-gray-200">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-gray-700 uppercase text-xs tracking-widest"><i class="fas fa-users mr-2"></i> Monitoring Kelas</h3>
+                    <h3 class="font-bold text-gray-700 uppercase text-xs tracking-widest"><i class="fas fa-users mr-2"></i> Monitoring & Cetak Detail Kelas</h3>
                     <button onclick="resetData()" class="text-[10px] text-red-500 font-bold hover:underline"><i class="fas fa-sync mr-1"></i> Hapus Semua Data</button>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pb-10" id="rekapKelasContainer"></div>
@@ -150,12 +147,9 @@
     <audio id="beepSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
     <script>
-        // ==========================================
-        // 1. PENGATURAN UTAMA (GANTI DI SINI)
-        // ==========================================
+        // CONFIG
         const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxPQ7KibCua6RpF0mia_rzNoCd7dWoX61mOAJUhllaJ9L2qTqhaukl_o3Mef69dmnyq/exec';
         
-        // DATA MASTER SISWA
         const DATA_MASTER = [
             { id: "1240", nis: "1240", nama: "AGASTYA BRAMANTA DEWA", kelas: "7A" },
             { id: "1241", nis: "1241", nama: "ANISA DEWI", kelas: "7A" },
@@ -230,46 +224,38 @@
         ];
 
         let attendanceData = JSON.parse(localStorage.getItem('absensi_data')) || [];
-        let html5QrCode = null;
+        let showAllLogs = false;
 
-        // AUTHENTICATION
+        // AUTH
         document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
             if(document.getElementById('username').value === 'admin' && document.getElementById('password').value === 'admin123') {
                 document.getElementById('loginSection').classList.add('hidden');
                 document.getElementById('mainDashboard').classList.remove('hidden');
                 initApp();
-            } else { alert("Username/Password Salah!"); }
+            } else { alert("Login Gagal!"); }
         });
 
-        function logout() {
-            if(confirm("Keluar sistem?")) location.reload();
-        }
+        function logout() { if(confirm("Keluar?")) location.reload(); }
 
         function initApp() {
-            updateClock(); 
-            setInterval(updateClock, 1000);
-            renderStats(); 
-            renderLogs(); 
-            startScanner();
+            updateClock(); setInterval(updateClock, 1000);
+            renderStats(); renderLogs(); startScanner();
         }
 
         function updateClock() {
             const now = new Date();
             document.getElementById('realTimeClock').innerText = now.toLocaleTimeString('id-ID');
-            document.getElementById('currentDate').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('currentDate').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
         }
 
         function startScanner() {
-            html5QrCode = new Html5Qrcode("reader");
+            const html5QrCode = new Html5Qrcode("reader");
             html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, (text) => {
                 processAttendance(text);
             }).catch(err => console.error(err));
         }
 
-        // ==========================================
-        // 2. PROSES ABSENSI & KIRIM KE SHEETS
-        // ==========================================
         function processAttendance(id) {
             const s = DATA_MASTER.find(item => item.id === id || item.nis === id);
             const res = document.getElementById('scanResult');
@@ -285,33 +271,43 @@
                     res.innerText = "⚠️ SUDAH ABSEN: " + s.nama;
                 } else {
                     document.getElementById('beepSound').play();
-                    
-                    const newEntry = { 
-                        nis: s.nis, nama: s.nama, kelas: s.kelas, 
-                        tgl: today, waktu: new Date().toLocaleTimeString('id-ID') 
-                    };
-
-                    // Simpan Lokal
-                    attendanceData.unshift(newEntry);
+                    const entry = { nis: s.nis, nama: s.nama, kelas: s.kelas, tgl: today, waktu: new Date().toLocaleTimeString('id-ID') };
+                    attendanceData.unshift(entry);
                     localStorage.setItem('absensi_data', JSON.stringify(attendanceData));
                     
-                    // Kirim Online (Google Sheets)
-                    if(GOOGLE_SHEET_URL !== 'GANTI_DENGAN_URL_WEB_APP_ANDA_DI_SINI') {
-                        fetch(GOOGLE_SHEET_URL, {
-                            method: 'POST',
-                            mode: 'no-cors',
-                            cache: 'no-cache',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(newEntry)
-                        }).catch(err => console.log("Offline/Error Sheets"));
-                    }
+                    fetch(GOOGLE_SHEET_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(entry) });
 
                     res.className = "mt-4 p-3 rounded-lg bg-green-100 text-green-700 font-bold";
                     res.innerText = "✅ BERHASIL: " + s.nama;
                     renderStats(); renderLogs();
                 }
             }
-            setTimeout(() => res.classList.add('hidden'), 2500);
+            setTimeout(() => res.classList.add('hidden'), 2000);
+        }
+
+        function toggleLogs() {
+            showAllLogs = !showAllLogs;
+            renderLogs();
+        }
+
+        function renderLogs() {
+            const today = new Date().toLocaleDateString('id-ID');
+            const logs = attendanceData.filter(a => a.tgl === today);
+            const btn = document.getElementById('toggleLogsBtn');
+            const display = showAllLogs ? logs : logs.slice(0, 5);
+
+            if (logs.length > 5) {
+                btn.classList.remove('hidden');
+                btn.innerHTML = showAllLogs ? `<i class="fas fa-eye-slash mr-1"></i> SEMBUNYIKAN` : `<i class="fas fa-eye mr-1"></i> LIHAT SEMUA (${logs.length})`;
+            } else { btn.classList.add('hidden'); }
+
+            document.getElementById('attendanceLog').innerHTML = display.map((a, i) => `
+                <tr>
+                    <td class="p-4 font-mono text-xs text-blue-600 font-bold">${a.waktu}</td>
+                    <td class="p-4 text-xs font-bold">${a.nama}</td>
+                    <td class="p-4 text-xs text-gray-500">${a.kelas}</td>
+                    <td class="p-4 text-center"><button onclick="deleteRow('${a.nis}', '${a.tgl}')" class="text-red-300 hover:text-red-600"><i class="fas fa-trash"></i></button></td>
+                </tr>`).join('') || '<tr><td colspan="4" class="p-10 text-center text-gray-400">Belum ada data</td></tr>';
         }
 
         function renderStats() {
@@ -328,101 +324,145 @@
                 const tk = DATA_MASTER.filter(s => s.kelas === k).length;
                 const hk = attendanceData.filter(a => a.tgl === today && a.kelas === k).length;
                 return `
-                    <div class="bg-white p-4 rounded-xl border shadow-sm">
-                        <div class="flex justify-between text-xs font-bold mb-2"><span>KELAS ${k}</span><span class="text-blue-600">${hk}/${tk}</span></div>
-                        <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                            <div class="bg-blue-500 h-full" style="width:${(hk/tk)*100}%"></div>
+                    <div class="bg-white p-4 rounded-xl border shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between text-xs font-bold mb-2"><span>KELAS ${k}</span><span class="text-blue-600">${hk}/${tk}</span></div>
+                            <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden mb-4">
+                                <div class="bg-blue-500 h-full" style="width:${(hk/tk)*100}%"></div>
+                            </div>
                         </div>
-                        <button onclick="printClassReport('${k}')" class="w-full mt-3 py-1 bg-gray-50 border text-[10px] font-bold rounded hover:bg-blue-600 hover:text-white transition">CETAK DETAIL</button>
+                        <div class="flex flex-col gap-2">
+                            <button onclick="printClassDetail('${k}')" class="w-full py-2 bg-blue-50 text-blue-600 border border-blue-100 rounded-lg text-[10px] font-bold hover:bg-blue-600 hover:text-white transition">
+                                <i class="fas fa-file-alt mr-1"></i> CETAK HARIAN ${k}
+                            </button>
+                            <button onclick="printMonthlyReport('${k}')" class="w-full py-2 bg-purple-50 text-purple-600 border border-purple-100 rounded-lg text-[10px] font-bold hover:bg-purple-600 hover:text-white transition">
+                                <i class="fas fa-calendar-alt mr-1"></i> REKAP BULANAN ${k}
+                            </button>
+                        </div>
                     </div>`;
             }).join('');
         }
 
-        function renderLogs() {
-            const today = new Date().toLocaleDateString('id-ID');
-            const logs = attendanceData.filter(a => a.tgl === today);
-            document.getElementById('attendanceLog').innerHTML = logs.map((a, i) => `
-                <tr class="hover:bg-gray-50 transition">
-                    <td class="p-4 font-mono text-xs text-blue-600 font-bold">${a.waktu}</td>
-                    <td class="p-4 text-xs font-bold">${a.nama}</td>
-                    <td class="p-4 text-xs text-gray-500">${a.kelas}</td>
-                    <td class="p-4 text-center"><button onclick="deleteRow(${i})" class="text-red-300 hover:text-red-600"><i class="fas fa-trash"></i></button></td>
-                </tr>`).join('');
+        function deleteRow(nis, tgl) { 
+            if(confirm("Hapus baris ini?")) { 
+                attendanceData = attendanceData.filter(a => !(a.nis === nis && a.tgl === tgl));
+                localStorage.setItem('absensi_data', JSON.stringify(attendanceData)); 
+                renderStats(); renderLogs(); 
+            } 
         }
 
-        function deleteRow(i) {
-            if(confirm("Hapus?")) { attendanceData.splice(i, 1); localStorage.setItem('absensi_data', JSON.stringify(attendanceData)); renderStats(); renderLogs(); }
-        }
-
-        function resetData() {
-            if(confirm("HAPUS SEMUA DATABASE? Tindakan ini tidak bisa dibatalkan.")) { 
-                attendanceData = []; localStorage.removeItem('absensi_data'); renderStats(); renderLogs(); 
-            }
-        }
-
-        // --- FUNGSI CETAK ---
+        function resetData() { if(confirm("Hapus semua?")) { attendanceData = []; localStorage.removeItem('absensi_data'); renderStats(); renderLogs(); } }
+        
         function printFullReport() {
-            const today = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const today = new Date().toLocaleDateString('id-ID');
             const win = window.open('', '_blank');
-            win.document.write(`<html><head><style>body{font-family:sans-serif;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #000;padding:8px;font-size:12px}</style></head><body>
-                <h2 style="text-align:center">LAPORAN KEHADIRAN HARIAN<br>SMPN 2 PRINGKUKU</h2>
-                <p>Tanggal: ${today}</p>
-                <table><thead><tr><th>No</th><th>Nama</th><th>Kelas</th><th>Status</th><th>Jam</th></tr></thead><tbody>
-                ${DATA_MASTER.map((s,i)=>{
-                    const a = attendanceData.find(d => d.nis === s.nis && d.tgl === new Date().toLocaleDateString('id-ID'));
+            win.document.write(`<html><head><style>table{width:100%;border-collapse:collapse;} th,td{border:1px solid black;padding:5px;text-align:left;}</style></head><body style="font-family:sans-serif"><h2>Rekapitulasi Seluruh Siswa - ${today}</h2><table>
+                <tr><th>No</th><th>Nama</th><th>Kelas</th><th>Status</th><th>Waktu</th></tr>
+                ${DATA_MASTER.map((s,i) => {
+                    const a = attendanceData.find(d => d.nis === s.nis && d.tgl === today);
                     return `<tr><td>${i+1}</td><td>${s.nama}</td><td>${s.kelas}</td><td>${a?'HADIR':'ALFA'}</td><td>${a?a.waktu:'-'}</td></tr>`;
                 }).join('')}
-                </tbody></table></body></html>`);
+            </table></body></html>`);
             win.document.close(); win.print();
         }
 
-        function printMonthlyReport() {
+        function printClassDetail(className) {
+            const today = new Date().toLocaleDateString('id-ID');
+            const siswaKelas = DATA_MASTER.filter(s => s.kelas === className);
+            const win = window.open('', '_blank');
+            win.document.write(`<html><head><style>
+                table{width:100%;border-collapse:collapse;margin-top:20px;} 
+                th,td{border:1px solid black;padding:8px;text-align:left;} 
+                .status-hadir{color:green;font-weight:bold;} 
+                .status-alfa{color:red;font-weight:bold;}
+            </style></head><body style="font-family:sans-serif;padding:20px;">
+            <div style="text-align:center"><h2>DAFTAR HADIR SISWA - KELAS ${className}</h2><p>SMP NEGERI 2 PRINGKUKU | Tanggal: ${today}</p></div>
+            <table><thead><tr><th>No</th><th>NIS</th><th>Nama Siswa</th><th>Jam Masuk</th><th>Status</th></tr></thead><tbody>
+            ${siswaKelas.map((s, i) => {
+                const a = attendanceData.find(d => d.nis === s.nis && d.tgl === today);
+                return `<tr><td>${i+1}</td><td>${s.nis}</td><td>${s.nama}</td><td>${a ? a.waktu : '-'}</td><td class="${a?'status-hadir':'status-alfa'}">${a ? 'HADIR' : 'ALFA'}</td></tr>`;
+            }).join('')}
+            </tbody></table><div style="margin-top:30px;float:right;text-align:center"><p>Pringkuku, ${today}</p><br><br><br><p><b>__________________________</b><br>Wali Kelas ${className}</p></div></body></html>`);
+            win.document.close(); win.print();
+        }
+
+        function printMonthlyReport(className) {
             const now = new Date();
-            const monthName = now.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
             const currentMonth = now.getMonth() + 1;
             const currentYear = now.getFullYear();
-
+            const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+            
+            const siswaKelas = DATA_MASTER.filter(s => s.kelas === className);
+            
             const win = window.open('', '_blank');
-            win.document.write(`<html><head><style>body{font-family:sans-serif;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #000;padding:6px;font-size:10px}</style></head><body>
-                <h2 style="text-align:center">REKAPITULASI KEHADIRAN BULANAN<br>SMPN 2 PRINGKUKU</h2>
-                <p>Periode: ${monthName}</p>
-                <table><thead><tr><th>No</th><th>NIS</th><th>Nama</th><th>Kelas</th><th>Total Hadir</th><th>Persentase</th></tr></thead><tbody>
-                ${DATA_MASTER.map((s,i)=>{
-                    const count = attendanceData.filter(a => {
-                        const [d, m, y] = a.tgl.split('/');
-                        return a.nis === s.nis && parseInt(m) === currentMonth && parseInt(y) === currentYear;
-                    }).length;
-                    const days = [...new Set(attendanceData.filter(a => {
-                        const [d, m, y] = a.tgl.split('/');
-                        return parseInt(m) === currentMonth && parseInt(y) === currentYear;
-                    }).map(a => a.tgl))].length || 1;
-                    return `<tr><td>${i+1}</td><td>${s.nis}</td><td>${s.nama}</td><td>${s.kelas}</td><td>${count} Hari</td><td>${Math.round((count/days)*100)}%</td></tr>`;
-                }).join('')}
-                </tbody></table></body></html>`);
-            win.document.close(); win.print();
-        }
-
-        function printClassReport(kelas) {
-            const today = new Date().toLocaleDateString('id-ID');
-            const win = window.open('', '_blank');
-            const list = DATA_MASTER.filter(s => s.kelas === kelas);
-            win.document.write(`<html><head><style>body{font-family:sans-serif;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #000;padding:8px}</style></head><body>
-                <h2>LAPORAN KELAS ${kelas}</h2><p>Tanggal: ${today}</p>
-                <table><thead><tr><th>No</th><th>Nama</th><th>Status</th></tr></thead><tbody>
-                ${list.map((s,i)=>{
-                    const a = attendanceData.find(d => d.nis === s.nis && d.tgl === today);
-                    return `<tr><td>${i+1}</td><td>${s.nama}</td><td>${a?'HADIR ('+a.waktu+')':'ALFA'}</td></tr>`;
-                }).join('')}
-                </tbody></table></body></html>`);
-            win.document.close(); win.print();
+            win.document.write(`
+                <html>
+                <head>
+                    <title>Rekap Bulanan ${className}</title>
+                    <style>
+                        table { width: 100%; border-collapse: collapse; font-size: 9px; margin-top: 15px; }
+                        th, td { border: 1px solid black; padding: 3px; text-align: center; }
+                        .text-left { text-align: left; padding-left: 5px; }
+                        .hadir { color: green; font-weight: bold; }
+                        .alfa { background-color: #fee2e2; }
+                        header { text-align: center; font-family: sans-serif; }
+                        @media print { @page { size: landscape; } }
+                    </style>
+                </head>
+                <body style="font-family:sans-serif; padding:10px;">
+                    <header>
+                        <h2 style="margin:0">REKAPITULASI ABSENSI BULANAN</h2>
+                        <h3 style="margin:5px 0">KELAS ${className} - ${monthNames[now.getMonth()]} ${currentYear}</h3>
+                        <p style="margin:0; font-size: 11px;">SMP NEGERI 2 PRINGKUKU</p>
+                    </header>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">No</th>
+                                <th rowspan="2" style="width:150px">Nama Siswa</th>
+                                <th colspan="${daysInMonth}">Tanggal</th>
+                                <th rowspan="2">H</th>
+                            </tr>
+                            <tr>
+                                ${Array.from({length: daysInMonth}, (_, i) => `<th>${i+1}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${siswaKelas.map((s, i) => {
+                                let totalHadir = 0;
+                                const rowDots = Array.from({length: daysInMonth}, (_, d) => {
+                                    const tglCari = `${d+1}/${currentMonth}/${currentYear}`;
+                                    // Karena format toLocaleDateString bisa berbeda-beda, kita buat pencocokan yang lebih fleksibel
+                                    const isHadir = attendanceData.some(a => a.nis === s.nis && a.tgl === tglCari);
+                                    if(isHadir) totalHadir++;
+                                    return `<td class="${isHadir ? '' : 'alfa'}">${isHadir ? '✓' : ''}</td>`;
+                                }).join('');
+                                
+                                return `
+                                    <tr>
+                                        <td>${i+1}</td>
+                                        <td class="text-left">${s.nama}</td>
+                                        ${rowDots}
+                                        <td style="font-weight:bold">${totalHadir}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                    
+                    <div style="margin-top:20px; float:right; text-align:center; font-size: 11px;">
+                        <p>Pringkuku, ${new Date().toLocaleDateString('id-ID')}</p>
+                        <br><br><br>
+                        <p><b>__________________________</b><br>Wali Kelas ${className}</p>
+                    </div>
+                </body>
+                </html>
+            `);
+            win.document.close();
+            win.print();
         }
     </script>
 </body>
-    <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));
-    });
-  }
-</script>
 </html>
