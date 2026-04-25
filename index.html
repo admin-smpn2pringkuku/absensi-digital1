@@ -15,131 +15,223 @@
     <script src="https://unpkg.com/html5-qrcode"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
-        body { font-family: 'Poppins', sans-serif; background-color: #f0f4f8; }
-        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-radius: 1rem; }
-        .bg-education {
-            background-image: linear-gradient(rgba(30, 64, 175, 0.8), rgba(30, 64, 175, 0.8)), url('https://images.unsplash.com/photo-1523050335392-93851179ae22?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
-            background-size: cover; background-position: center;
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f8fafc; 
         }
-        .scanner-wrapper { position: relative; overflow: hidden; border-radius: 1rem; background: #000; min-height: 300px; }
+
+        /* Login Background & Card */
+        .bg-login {
+            background: linear-gradient(135deg, rgba(30, 64, 175, 0.92), rgba(30, 58, 138, 0.85)), 
+                        url('https://images.unsplash.com/photo-1541339907198-e08756ebafe3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover; 
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .glass-login {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Custom Inputs */
+        .input-group:focus-within label {
+            color: #2563eb;
+        }
+
+        /* Animation */
+        .fade-in { animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Scanner Styling */
+        .scanner-wrapper { position: relative; overflow: hidden; border-radius: 1.5rem; background: #000; min-height: 300px; border: 4px solid #fff; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
         #reader { border: none !important; }
         .scan-laser {
             position: absolute; top: 0; left: 0; width: 100%; height: 3px;
             background: linear-gradient(to right, transparent, #3b82f6, transparent);
             box-shadow: 0 0 15px #3b82f6; animation: scanMove 2.5s infinite linear; z-index: 10;
         }
-        @keyframes scanMove { 0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; } }
+        @keyframes scanMove { 0% { top: 5%; } 50% { top: 95%; } 100% { top: 5%; } }
+        
         @media print { .no-print { display: none !important; } body { background: white; } }
     </style>
 </head>
-<body class="text-gray-800">
+<body class="text-slate-800">
 
-    <div id="loginSection" class="min-h-screen flex items-center justify-center bg-education p-4 no-print">
-        <div class="glass-card p-8 w-full max-w-md shadow-2xl text-center border border-white/20">
-            <img src="https://i.imgur.com/KGNEukP.png" alt="Logo" class="w-20 h-20 mx-auto mb-4 object-contain">
-            <h1 class="text-2xl font-bold text-blue-900 mb-2">E-Absensi Pro</h1>
-            <p class="text-xs text-blue-700 font-semibold mb-6 uppercase tracking-wider">SMP Negeri 2 Pringkuku</p>
+    <div id="loginSection" class="min-h-screen flex items-center justify-center bg-login p-6 no-print">
+        <div class="glass-login p-10 w-full max-w-md rounded-[2.5rem] fade-in relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-blue-600"></div>
             
-            <form id="loginForm" class="space-y-4">
-                <div class="text-left">
-                    <label class="text-[10px] font-bold text-gray-500 ml-1 uppercase">Username Admin</label>
-                    <input type="text" id="username" class="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500" placeholder="admin" required>
+            <div class="mb-10 text-center">
+                <div class="inline-flex p-4 rounded-3xl bg-blue-50 mb-4">
+                    <img src="https://i.imgur.com/KGNEukP.png" alt="Logo" class="w-16 h-16 object-contain">
                 </div>
-                <div class="text-left">
-                    <label class="text-[10px] font-bold text-gray-500 ml-1 uppercase">Password</label>
-                    <input type="password" id="password" class="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••••" required>
+                <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Portal Absensi</h1>
+                <p class="text-sm text-slate-500 font-medium mt-2">SMP NEGERI 2 PRINGKUKU</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-6">
+                <div class="input-group">
+                    <label class="block text-xs font-bold text-slate-500 mb-2 ml-1 uppercase tracking-widest">Administrator ID</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
+                            <i class="fas fa-user-shield"></i>
+                        </span>
+                        <input type="text" id="username" 
+                            class="w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-300" 
+                            placeholder="Masukkan username" required>
+                    </div>
                 </div>
-                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow-lg mt-2">MASUK SISTEM</button>
+
+                <div class="input-group">
+                    <label class="block text-xs font-bold text-slate-500 mb-2 ml-1 uppercase tracking-widest">Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                        <input type="password" id="password" 
+                            class="w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-300" 
+                            placeholder="••••••••" required>
+                    </div>
+                </div>
+
+                <button type="submit" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-blue-200 flex items-center justify-center gap-3 active:scale-[0.98]">
+                    <span>MASUK KE DASHBOARD</span>
+                    <i class="fas fa-arrow-right text-sm"></i>
+                </button>
             </form>
+
+            <div class="mt-10 text-center">
+                <p class="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-semibold">Sistem Informasi Manajemen Sekolah</p>
+            </div>
         </div>
     </div>
 
     <div id="mainDashboard" class="hidden min-h-screen flex flex-col">
-        <header class="bg-white shadow-md p-4 sticky top-0 z-50 no-print border-b border-blue-100">
+        <header class="bg-white/80 backdrop-blur-md shadow-sm p-4 sticky top-0 z-50 no-print border-b border-slate-100">
             <div class="container mx-auto flex justify-between items-center">
-                <div class="flex items-center space-x-3">
-                    <div class="bg-blue-600 p-2 rounded-lg text-white shadow-md"><i class="fas fa-university"></i></div>
-                    <h2 class="font-bold leading-tight">E-Absensi Pro <br><span class="text-[10px] text-gray-400 uppercase font-normal">SMPN 2 Pringkuku</span></h2>
-                </div>
                 <div class="flex items-center space-x-4">
-                    <div class="text-right hidden sm:block">
-                        <p id="realTimeClock" class="font-bold text-blue-600 text-sm"></p>
-                        <p id="currentDate" class="text-[10px] text-gray-500 font-bold uppercase"></p>
+                    <div class="bg-blue-600 p-2.5 rounded-xl text-white shadow-lg shadow-blue-100 italic font-black text-xl">
+                        <i class="fas fa-graduation-cap"></i>
                     </div>
-                    <button onclick="logout()" class="flex items-center gap-2 bg-red-50 text-red-600 px-3 py-2 rounded-lg font-bold text-xs hover:bg-red-600 hover:text-white transition-all border border-red-100 shadow-sm">
-                        <i class="fas fa-sign-out-alt"></i> <span class="hidden md:inline">KELUAR</span>
+                    <div>
+                        <h2 class="font-bold text-slate-900 leading-tight">E-Absensi Pro</h2>
+                        <p class="text-[10px] text-blue-600 uppercase font-bold tracking-tighter">SMPN 2 Pringkuku</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="text-right hidden sm:block border-r pr-6 border-slate-200">
+                        <p id="realTimeClock" class="font-bold text-slate-900 text-lg"></p>
+                        <p id="currentDate" class="text-[10px] text-slate-400 font-bold uppercase"></p>
+                    </div>
+                    <button onclick="logout()" class="group flex items-center gap-2 bg-red-50 text-red-600 px-4 py-2.5 rounded-xl font-bold text-xs hover:bg-red-600 hover:text-white transition-all border border-red-100">
+                        <i class="fas fa-power-off group-hover:rotate-90 transition-transform"></i> <span class="hidden md:inline uppercase">Logout</span>
                     </button>
                 </div>
             </div>
         </header>
 
-        <main class="container mx-auto p-4 flex-grow">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 no-print">
-                <div class="bg-white p-4 rounded-xl shadow-sm border-b-4 border-blue-500">
-                    <p class="text-[10px] text-gray-400 font-bold uppercase">Total Siswa</p>
-                    <h3 id="statTotal" class="text-xl font-bold text-blue-900">0</h3>
+        <main class="container mx-auto p-6 flex-grow">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 no-print">
+                <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="bg-blue-50 text-blue-600 p-2 rounded-lg text-sm"><i class="fas fa-users text-lg"></i></div>
+                        <span class="text-[10px] font-black text-slate-300 uppercase">Total</span>
+                    </div>
+                    <h3 id="statTotal" class="text-3xl font-black text-slate-900">0</h3>
+                    <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-wider">Siswa Terdaftar</p>
                 </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border-b-4 border-green-500">
-                    <p class="text-[10px] text-gray-400 font-bold uppercase">Hadir Hari Ini</p>
-                    <h3 id="statHadir" class="text-xl font-bold text-green-600">0</h3>
+                <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="bg-green-50 text-green-600 p-2 rounded-lg text-sm"><i class="fas fa-check-circle text-lg"></i></div>
+                        <span class="text-[10px] font-black text-slate-300 uppercase">Hadir</span>
+                    </div>
+                    <h3 id="statHadir" class="text-3xl font-black text-green-600">0</h3>
+                    <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-wider">Kehadiran Hari Ini</p>
                 </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border-b-4 border-red-500">
-                    <p class="text-[10px] text-gray-400 font-bold uppercase">Absen Hari Ini</p>
-                    <h3 id="statTidakHadir" class="text-xl font-bold text-red-600">0</h3>
+                <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="bg-red-50 text-red-600 p-2 rounded-lg text-sm"><i class="fas fa-times-circle text-lg"></i></div>
+                        <span class="text-[10px] font-black text-slate-300 uppercase">Absen</span>
+                    </div>
+                    <h3 id="statTidakHadir" class="text-3xl font-black text-red-600">0</h3>
+                    <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-wider">Tanpa Keterangan</p>
                 </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border-b-4 border-yellow-500">
-                    <p class="text-[10px] text-gray-400 font-bold uppercase">Persentase</p>
-                    <h3 id="statPersen" class="text-xl font-bold text-yellow-600">0%</h3>
+                <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="bg-amber-50 text-amber-600 p-2 rounded-lg text-sm"><i class="fas fa-chart-pie text-lg"></i></div>
+                        <span class="text-[10px] font-black text-slate-300 uppercase">Ratio</span>
+                    </div>
+                    <h3 id="statPersen" class="text-3xl font-black text-amber-600">0%</h3>
+                    <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-wider">Persentase Masuk</p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 no-print">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10 no-print">
                 <div class="lg:col-span-1">
-                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                        <h3 class="font-bold mb-4 text-xs uppercase text-gray-500 flex items-center">
-                            <i class="fas fa-camera mr-2"></i> Kamera Scanner
+                    <div class="bg-slate-900 p-6 rounded-[2.5rem] shadow-2xl">
+                        <h3 class="font-bold mb-6 text-xs uppercase text-slate-400 flex items-center tracking-[0.2em]">
+                            <i class="fas fa-qrcode mr-3 text-blue-500"></i> Scanning Area
                         </h3>
                         <div class="scanner-wrapper">
                             <div class="scan-laser"></div>
                             <div id="reader"></div>
                         </div>
-                        <div id="scanResult" class="mt-4 hidden p-3 rounded-lg text-center font-bold text-sm"></div>
+                        <div id="scanResult" class="mt-6 hidden p-4 rounded-2xl text-center font-black text-sm uppercase tracking-widest"></div>
                     </div>
                 </div>
 
                 <div class="lg:col-span-2">
-                    <div class="bg-white rounded-2xl shadow-sm overflow-hidden min-h-[400px] border border-gray-100 flex flex-col">
-                        <div class="p-4 border-b bg-gray-50 flex flex-wrap gap-2 justify-between items-center">
-                            <h3 class="font-bold text-xs uppercase text-gray-500">Log Kehadiran Hari Ini</h3>
+                    <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden flex flex-col h-full">
+                        <div class="p-6 border-b border-slate-50 flex flex-wrap gap-4 justify-between items-center">
+                            <div>
+                                <h3 class="font-black text-slate-900 text-sm uppercase tracking-tight">Log Kehadiran</h3>
+                                <p class="text-[10px] text-slate-400 font-medium">Data real-time masuk hari ini</p>
+                            </div>
                             <div class="flex gap-2">
-                                <button id="toggleLogsBtn" onclick="toggleLogs()" class="text-[10px] bg-gray-200 text-gray-700 px-3 py-1.5 rounded font-bold hover:bg-gray-300 transition hidden">
-                                    <i class="fas fa-eye mr-1"></i> LIHAT SEMUA
+                                <button id="toggleLogsBtn" onclick="toggleLogs()" class="text-[10px] bg-slate-100 text-slate-600 px-4 py-2 rounded-xl font-black hover:bg-slate-200 transition hidden uppercase">
+                                    <i class="fas fa-list mr-2"></i> Semua Data
                                 </button>
-                                <button onclick="printFullReport()" class="text-[10px] bg-blue-600 text-white px-3 py-1.5 rounded font-bold hover:bg-blue-700 shadow-sm transition">
-                                    <i class="fas fa-print mr-1"></i> CETAK REKAP HARIAN
+                                <button onclick="printFullReport()" class="text-[10px] bg-blue-600 text-white px-4 py-2 rounded-xl font-black hover:bg-blue-700 shadow-lg shadow-blue-100 transition uppercase">
+                                    <i class="fas fa-print mr-2"></i> Print Rekap
                                 </button>
                             </div>
                         </div>
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left text-sm">
-                                <thead class="bg-gray-50 text-[10px] uppercase text-gray-400 border-b">
-                                    <tr><th class="p-4">Jam</th><th class="p-4">Nama</th><th class="p-4">Kelas</th><th class="p-4 text-center">Aksi</th></tr>
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50/50 text-[10px] uppercase text-slate-400 font-black">
+                                    <tr>
+                                        <th class="px-6 py-4">Waktu</th>
+                                        <th class="px-6 py-4">Siswa</th>
+                                        <th class="px-6 py-4">Kelas</th>
+                                        <th class="px-6 py-4 text-center">Action</th>
+                                    </tr>
                                 </thead>
-                                <tbody id="attendanceLog" class="divide-y"></tbody>
+                                <tbody id="attendanceLog" class="text-sm divide-y divide-slate-50 font-medium"></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="no-print">
-                <hr class="mb-8 border-gray-200">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-gray-700 uppercase text-xs tracking-widest"><i class="fas fa-users mr-2"></i> Monitoring & Cetak Detail Kelas</h3>
-                    <button onclick="resetData()" class="text-[10px] text-red-500 font-bold hover:underline"><i class="fas fa-sync mr-1"></i> Hapus Semua Data</button>
+            <div class="no-print pb-20">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="h-[1px] flex-grow bg-slate-200"></div>
+                    <h3 class="font-black text-slate-400 uppercase text-[10px] tracking-[0.3em]">Monitoring Kelas</h3>
+                    <div class="h-[1px] flex-grow bg-slate-200"></div>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pb-10" id="rekapKelasContainer"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6" id="rekapKelasContainer"></div>
+                
+                <div class="mt-12 text-center">
+                    <button onclick="resetData()" class="text-[10px] text-red-400 font-bold hover:text-red-600 transition tracking-widest uppercase italic">
+                        <i class="fas fa-exclamation-triangle mr-1"></i> Factory Reset Data Absensi
+                    </button>
+                </div>
             </div>
         </main>
     </div>
@@ -231,10 +323,10 @@
                 document.getElementById('loginSection').classList.add('hidden');
                 document.getElementById('mainDashboard').classList.remove('hidden');
                 initApp();
-            } else { alert("Login Gagal!"); }
+            } else { alert("Login Gagal! Periksa kembali kredensial Anda."); }
         });
 
-        function logout() { if(confirm("Keluar?")) location.reload(); }
+        function logout() { if(confirm("Anda akan keluar dari sistem?")) location.reload(); }
 
         function initApp() {
             updateClock(); setInterval(updateClock, 1000);
@@ -262,25 +354,25 @@
             res.classList.remove('hidden');
 
             if(!s) {
-                res.className = "mt-4 p-3 rounded-lg bg-red-100 text-red-700 font-bold";
-                res.innerText = "❌ TIDAK TERDAFTAR";
+                res.className = "mt-6 p-4 rounded-2xl bg-red-50 text-red-600 border border-red-100";
+                res.innerText = "Siswa Tidak Dikenali";
             } else {
                 const today = new Date().toLocaleDateString('id-ID');
                 if(attendanceData.find(a => a.nis === s.nis && a.tgl === today)) {
-                    res.className = "mt-4 p-3 rounded-lg bg-yellow-100 text-yellow-700 font-bold";
-                    res.innerText = "⚠️ SUDAH ABSEN: " + s.nama;
+                    res.className = "mt-6 p-4 rounded-2xl bg-amber-50 text-amber-600 border border-amber-100";
+                    res.innerText = "Sudah Absen: " + s.nama;
                 } else {
                     document.getElementById('beepSound').play();
                     const entry = { nis: s.nis, nama: s.nama, kelas: s.kelas, tgl: today, waktu: new Date().toLocaleTimeString('id-ID') };
                     attendanceData.unshift(entry);
                     localStorage.setItem('absensi_data', JSON.stringify(attendanceData));
                     fetch(GOOGLE_SHEET_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(entry) });
-                    res.className = "mt-4 p-3 rounded-lg bg-green-100 text-green-700 font-bold";
-                    res.innerText = "✅ BERHASIL: " + s.nama;
+                    res.className = "mt-6 p-4 rounded-2xl bg-green-50 text-green-600 border border-green-100";
+                    res.innerText = "Berhasil: " + s.nama;
                     renderStats(); renderLogs();
                 }
             }
-            setTimeout(() => res.classList.add('hidden'), 2000);
+            setTimeout(() => res.classList.add('hidden'), 2500);
         }
 
         function toggleLogs() { showAllLogs = !showAllLogs; renderLogs(); }
@@ -293,16 +385,16 @@
 
             if (logs.length > 5) {
                 btn.classList.remove('hidden');
-                btn.innerHTML = showAllLogs ? `<i class="fas fa-eye-slash mr-1"></i> SEMBUNYIKAN` : `<i class="fas fa-eye mr-1"></i> LIHAT SEMUA (${logs.length})`;
+                btn.innerHTML = showAllLogs ? `<i class="fas fa-eye-slash mr-2"></i> Sembunyikan` : `<i class="fas fa-eye mr-2"></i> Lihat Semua (${logs.length})`;
             } else { btn.classList.add('hidden'); }
 
             document.getElementById('attendanceLog').innerHTML = display.map((a, i) => `
-                <tr>
-                    <td class="p-4 font-mono text-xs text-blue-600 font-bold">${a.waktu}</td>
-                    <td class="p-4 text-xs font-bold">${a.nama}</td>
-                    <td class="p-4 text-xs text-gray-500">${a.kelas}</td>
-                    <td class="p-4 text-center"><button onclick="deleteRow('${a.nis}', '${a.tgl}')" class="text-red-300 hover:text-red-600"><i class="fas fa-trash"></i></button></td>
-                </tr>`).join('') || '<tr><td colspan="4" class="p-10 text-center text-gray-400">Belum ada data</td></tr>';
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-4 font-mono text-xs text-blue-600 font-bold">${a.waktu}</td>
+                    <td class="px-6 py-4 font-bold text-slate-700">${a.nama}</td>
+                    <td class="px-6 py-4"><span class="bg-slate-100 px-3 py-1 rounded-full text-[10px] font-black">${a.kelas}</span></td>
+                    <td class="px-6 py-4 text-center"><button onclick="deleteRow('${a.nis}', '${a.tgl}')" class="text-slate-300 hover:text-red-500 transition-colors"><i class="fas fa-trash-alt"></i></button></td>
+                </tr>`).join('') || '<tr><td colspan="4" class="p-20 text-center text-slate-300 italic">Belum ada aktivitas hari ini</td></tr>';
         }
 
         function renderStats() {
@@ -318,20 +410,24 @@
             document.getElementById('rekapKelasContainer').innerHTML = kls.map(k => {
                 const tk = DATA_MASTER.filter(s => s.kelas === k).length;
                 const hk = attendanceData.filter(a => a.tgl === today && a.kelas === k).length;
+                const pc = Math.round((hk/tk)*100);
                 return `
-                    <div class="bg-white p-4 rounded-xl border shadow-sm flex flex-col justify-between">
+                    <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
                         <div>
-                            <div class="flex justify-between text-xs font-bold mb-2"><span>KELAS ${k}</span><span class="text-blue-600">${hk}/${tk}</span></div>
-                            <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden mb-4">
-                                <div class="bg-blue-500 h-full" style="width:${(hk/tk)*100}%"></div>
+                            <div class="flex justify-between items-end mb-4">
+                                <h4 class="font-black text-slate-900">KELAS ${k}</h4>
+                                <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">${hk}/${tk}</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden mb-6">
+                                <div class="bg-blue-600 h-full rounded-full transition-all duration-1000" style="width:${pc}%"></div>
                             </div>
                         </div>
-                        <div class="flex flex-col gap-2">
-                            <button onclick="printClassDetail('${k}')" class="w-full py-2 bg-blue-50 text-blue-600 border border-blue-100 rounded-lg text-[10px] font-bold hover:bg-blue-600 hover:text-white transition">
-                                <i class="fas fa-file-alt mr-1"></i> CETAK HARIAN ${k}
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="printClassDetail('${k}')" class="py-3 bg-slate-50 text-slate-600 rounded-xl text-[10px] font-black hover:bg-blue-600 hover:text-white transition-all">
+                                HARIAN
                             </button>
-                            <button onclick="printMonthlyReport('${k}')" class="w-full py-2 bg-purple-50 text-purple-600 border border-purple-100 rounded-lg text-[10px] font-bold hover:bg-purple-600 hover:text-white transition">
-                                <i class="fas fa-calendar-alt mr-1"></i> REKAP BULANAN ${k}
+                            <button onclick="printMonthlyReport('${k}')" class="py-3 bg-slate-900 text-white rounded-xl text-[10px] font-black hover:bg-blue-700 transition-all">
+                                BULANAN
                             </button>
                         </div>
                     </div>`;
@@ -339,25 +435,19 @@
         }
 
         function deleteRow(nis, tgl) { 
-            if(confirm("Hapus baris ini?")) { 
+            if(confirm("Hapus baris ini dari rekaman hari ini?")) { 
                 attendanceData = attendanceData.filter(a => !(a.nis === nis && a.tgl === tgl));
                 localStorage.setItem('absensi_data', JSON.stringify(attendanceData)); 
                 renderStats(); renderLogs(); 
             } 
         }
 
-        function resetData() { if(confirm("Hapus semua data absensi?")) { attendanceData = []; localStorage.removeItem('absensi_data'); renderStats(); renderLogs(); } }
+        function resetData() { if(confirm("PERINGATAN: Seluruh data absensi akan dihapus permanen dari browser ini. Lanjutkan?")) { attendanceData = []; localStorage.removeItem('absensi_data'); renderStats(); renderLogs(); } }
         
         function printFullReport() {
             const today = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
             const win = window.open('', '_blank');
-            win.document.write(`<html><head><style>table{width:100%;border-collapse:collapse;} th,td{border:1px solid black;padding:5px;text-align:left;}</style></head><body style="font-family:sans-serif"><h2>Rekapitulasi Seluruh Siswa - ${today}</h2><table>
-                <tr><th>No</th><th>Nama</th><th>Kelas</th><th>Status</th><th>Waktu</th></tr>
-                ${DATA_MASTER.map((s,i) => {
-                    const a = attendanceData.find(d => d.nis === s.nis && d.tgl === new Date().toLocaleDateString('id-ID'));
-                    return `<tr><td>${i+1}</td><td>${s.nama}</td><td>${s.kelas}</td><td>${a?'HADIR':'ALFA'}</td><td>${a?a.waktu:'-'}</td></tr>`;
-                }).join('')}
-            </table></body></html>`);
+            win.document.write(`<html><head><style>table{width:100%;border-collapse:collapse;font-family:sans-serif;} th,td{border:1px solid #ddd;padding:10px;text-align:left;} th{background:#f4f4f4;}</style></head><body><h2>Rekap Seluruh Siswa - ${today}</h2><table><tr><th>No</th><th>Nama</th><th>Kelas</th><th>Status</th><th>Waktu</th></tr>${DATA_MASTER.map((s,i) => { const a = attendanceData.find(d => d.nis === s.nis && d.tgl === new Date().toLocaleDateString('id-ID')); return `<tr><td>${i+1}</td><td>${s.nama}</td><td>${s.kelas}</td><td>${a?'HADIR':'ALFA'}</td><td>${a?a.waktu:'-'}</td></tr>`; }).join('')}</table></body></html>`);
             win.document.close(); win.print();
         }
 
@@ -365,14 +455,7 @@
             const today = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
             const siswaKelas = DATA_MASTER.filter(s => s.kelas === className);
             const win = window.open('', '_blank');
-            win.document.write(`<html><head><style>table{width:100%;border-collapse:collapse;margin-top:20px;} th,td{border:1px solid black;padding:8px;text-align:left;} .status-hadir{color:green;font-weight:bold;} .status-alfa{color:red;font-weight:bold;}</style></head><body style="font-family:sans-serif;padding:20px;">
-            <div style="text-align:center"><h2>DAFTAR HADIR SISWA - KELAS ${className}</h2><p>SMP NEGERI 2 PRINGKUKU | Tanggal: ${today}</p></div>
-            <table><thead><tr><th>No</th><th>NIS</th><th>Nama Siswa</th><th>Jam Masuk</th><th>Status</th></tr></thead><tbody>
-            ${siswaKelas.map((s, i) => {
-                const a = attendanceData.find(d => d.nis === s.nis && d.tgl === new Date().toLocaleDateString('id-ID'));
-                return `<tr><td>${i+1}</td><td>${s.nis}</td><td>${s.nama}</td><td>${a ? a.waktu : '-'}</td><td class="${a?'status-hadir':'status-alfa'}">${a ? 'HADIR' : 'ALFA'}</td></tr>`;
-            }).join('')}
-            </tbody></table><div style="margin-top:30px;float:right;text-align:center"><p>Pringkuku, ${today}</p><br><br><br><p><b>__________________________</b><br>Wali Kelas ${className}</p></div></body></html>`);
+            win.document.write(`<html><head><style>table{width:100%;border-collapse:collapse;margin-top:20px;font-family:sans-serif;} th,td{border:1px solid black;padding:8px;text-align:left;} .status-hadir{color:green;font-weight:bold;} .status-alfa{color:red;font-weight:bold;}</style></head><body style="padding:20px;"><div style="text-align:center"><h2>DAFTAR HADIR - KELAS ${className}</h2><p>SMP NEGERI 2 PRINGKUKU | ${today}</p></div><table><thead><tr><th>No</th><th>NIS</th><th>Nama Siswa</th><th>Jam</th><th>Status</th></tr></thead><tbody>${siswaKelas.map((s, i) => { const a = attendanceData.find(d => d.nis === s.nis && d.tgl === new Date().toLocaleDateString('id-ID')); return `<tr><td>${i+1}</td><td>${s.nis}</td><td>${s.nama}</td><td>${a ? a.waktu : '-'}</td><td class="${a?'status-hadir':'status-alfa'}">${a ? 'HADIR' : 'ALFA'}</td></tr>`; }).join('')}</tbody></table><div style="margin-top:40px;float:right;text-align:center"><p>Pringkuku, ${today}</p><br><br><br><p><b>__________________________</b><br>Wali Kelas ${className}</p></div></body></html>`);
             win.document.close(); win.print();
         }
 
@@ -384,20 +467,7 @@
             const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
             const siswaKelas = DATA_MASTER.filter(s => s.kelas === className);
             const win = window.open('', '_blank');
-            win.document.write(`<html><head><title>Rekap Bulanan ${className}</title><style>table { width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 15px; } th, td { border: 1px solid black; padding: 4px; text-align: center; } .text-left { text-align: left; padding-left: 5px; } .alfa { background-color: #fce4e4; color: #cc0000; } header { text-align: center; font-family: sans-serif; } @media print { @page { size: landscape; } }</style></head><body style="font-family:sans-serif; padding:10px;">
-            <header><h2 style="margin:0">REKAPITULASI ABSENSI SISWA</h2><h3 style="margin:5px 0">KELAS ${className} - PERIODE ${monthNames[now.getMonth()].toUpperCase()} ${currentYear}</h3><p style="margin:0; font-size: 12px;">SMP NEGERI 2 PRINGKUKU</p></header>
-            <table><thead><tr><th rowspan="2">No</th><th rowspan="2" style="width:200px">Nama Siswa</th><th colspan="${daysInMonth}">Tanggal (Bulan ${monthNames[now.getMonth()]} ${currentYear})</th><th rowspan="2">H</th></tr><tr>${Array.from({length: daysInMonth}, (_, i) => `<th>${i+1}</th>`).join('')}</tr></thead><tbody>
-            ${siswaKelas.map((s, i) => {
-                let totalHadir = 0;
-                const rowDots = Array.from({length: daysInMonth}, (_, d) => {
-                    const tglCari = new Date(currentYear, now.getMonth(), d + 1).toLocaleDateString('id-ID');
-                    const isHadir = attendanceData.some(a => a.nis === s.nis && a.tgl === tglCari);
-                    if(isHadir) totalHadir++;
-                    return `<td class="${isHadir ? '' : 'alfa'}">${isHadir ? '✓' : '-'}</td>`;
-                }).join('');
-                return `<tr><td>${i+1}</td><td class="text-left">${s.nama}</td>${rowDots}<td style="font-weight:bold">${totalHadir}</td></tr>`;
-            }).join('')}</tbody></table>
-            <div style="margin-top:20px; float:right; text-align:center; font-size: 12px;"><p>Pringkuku, ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p><br><br><br><p><b>__________________________</b><br>Wali Kelas ${className}</p></div></body></html>`);
+            win.document.write(`<html><head><title>Rekap Bulanan ${className}</title><style>table { width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 15px; font-family:sans-serif; } th, td { border: 1px solid black; padding: 4px; text-align: center; } .text-left { text-align: left; padding-left: 5px; } .alfa { background-color: #fce4e4; color: #cc0000; } header { text-align: center; } @media print { @page { size: landscape; } }</style></head><body style="padding:10px;"><header><h2 style="margin:0">REKAPITULASI ABSENSI BULANAN</h2><h3 style="margin:5px 0 uppercase">KELAS ${className} - ${monthNames[now.getMonth()]} ${currentYear}</h3><p style="margin:0; font-size: 12px;">SMP NEGERI 2 PRINGKUKU</p></header><table><thead><tr><th rowspan="2">No</th><th rowspan="2" style="width:200px">Nama Siswa</th><th colspan="${daysInMonth}">Tanggal</th><th rowspan="2">H</th></tr><tr>${Array.from({length: daysInMonth}, (_, i) => `<th>${i+1}</th>`).join('')}</tr></thead><tbody>${siswaKelas.map((s, i) => { let totalHadir = 0; const rowDots = Array.from({length: daysInMonth}, (_, d) => { const tglCari = new Date(currentYear, now.getMonth(), d + 1).toLocaleDateString('id-ID'); const isHadir = attendanceData.some(a => a.nis === s.nis && a.tgl === tglCari); if(isHadir) totalHadir++; return `<td class="${isHadir ? '' : 'alfa'}">${isHadir ? '✓' : '-'}</td>`; }).join(''); return `<tr><td>${i+1}</td><td class="text-left">${s.nama}</td>${rowDots}<td style="font-weight:bold">${totalHadir}</td></tr>`; }).join('')}</tbody></table><div style="margin-top:20px; float:right; text-align:center; font-size: 12px;"><p>Pringkuku, ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p><br><br><br><p><b>__________________________</b><br>Wali Kelas ${className}</p></div></body></html>`);
             win.document.close(); win.print();
         }
     </script>
