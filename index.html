@@ -707,13 +707,149 @@ function ambilBulanTahun() {
             win.document.close(); win.print();
         }
 
-        function printClassDetail(className) {
-            const today = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-            const siswaKelas = DATA_MASTER.filter(s => s.kelas === className);
-            const win = window.open('', '_blank');
-            win.document.write(`<html><head><style>table{width:100%;border-collapse:collapse;margin-top:20px;font-family:sans-serif;} th,td{border:1px solid black;padding:8px;text-align:left;} .status-hadir{color:green;font-weight:bold;} .status-alfa{color:red;font-weight:bold;}</style></head><body style="padding:20px;"><div style="text-align:center"><h2>DAFTAR HADIR - KELAS ${className}</h2><p>SMP NEGERI 2 PRINGKUKU | ${today}</p></div><table><thead><tr><th>No</th><th>NIS</th><th>Nama Siswa</th><th>Jam</th><th>Status</th></tr></thead><tbody>${siswaKelas.map((s, i) => { const a = attendanceData.find(d => d.nis === s.nis && d.tgl === new Date().toLocaleDateString('id-ID')); return `<tr><td>${i+1}</td><td>${s.nis}</td><td>${s.nama}</td><td>${a ? a.waktu : '-'}</td><td class="${a?'status-hadir':'status-alfa'}">${a ? 'HADIR' : 'ALFA'}</td></tr>`; }).join('')}</tbody></table><div style="margin-top:40px;float:right;text-align:center"><p>Pringkuku, ${today}</p><br><br><br><p><b>__________________________</b><br>Wali Kelas ${className}</p></div></body></html>`);
-            win.document.close(); win.print();
+      function printClassDetail(className) {
+
+    const { bulan, tahun } = ambilBulanTahun();
+
+    const monthNames = [
+        "Januari","Februari","Maret","April","Mei","Juni",
+        "Juli","Agustus","September","Oktober","November","Desember"
+    ];
+
+    const siswaKelas = DATA_MASTER.filter(s => s.kelas === className);
+
+    const filtered = attendanceData.filter(a => {
+
+        if (!a.tgl) return false;
+
+        let tglObj;
+
+        if (a.tgl.includes('-')) {
+
+            tglObj = new Date(a.tgl);
+
+        } else if (a.tgl.includes('/')) {
+
+            const p = a.tgl.split('/');
+
+            tglObj = new Date(p[2], p[1]-1, p[0]);
+
+        } else {
+
+            return false;
         }
+
+        return tglObj.getMonth() === parseInt(bulan) &&
+               tglObj.getFullYear() === parseInt(tahun);
+
+    });
+
+    const win = window.open('', '_blank');
+
+    win.document.write(`
+
+    <html>
+
+    <head>
+
+    <style>
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            margin-top:20px;
+            font-family:sans-serif;
+        }
+
+        th,td{
+            border:1px solid black;
+            padding:8px;
+            text-align:left;
+        }
+
+        .status-hadir{
+            color:green;
+            font-weight:bold;
+        }
+
+        .status-alfa{
+            color:red;
+            font-weight:bold;
+        }
+
+    </style>
+
+    </head>
+
+    <body style="padding:20px;">
+
+    <div style="text-align:center">
+
+        <h2>REKAP HARIAN KELAS ${className}</h2>
+
+        <p>
+            Bulan ${monthNames[bulan]} ${tahun}
+        </p>
+
+    </div>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>No</th>
+                <th>NIS</th>
+                <th>Nama</th>
+                <th>Status</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        ${siswaKelas.map((s,i)=>{
+
+            const hadir = filtered.some(a => a.nis === s.nis);
+
+            return `
+
+            <tr>
+
+                <td>${i+1}</td>
+
+                <td>${s.nis}</td>
+
+                <td>${s.nama}</td>
+
+                <td class="${hadir ? 'status-hadir':'status-alfa'}">
+
+                    ${hadir ? 'HADIR':'BELUM ABSEN'}
+
+                </td>
+
+            </tr>
+
+            `;
+
+        }).join('')}
+
+        </tbody>
+
+    </table>
+
+    </body>
+
+    </html>
+
+    `);
+
+    win.document.close();
+
+    win.print();
+}
 
         function printMonthlyReport(className) {
 
@@ -723,7 +859,30 @@ function ambilBulanTahun() {
             const daysInMonth = new Date(tahun, parseInt(bulan) + 1, 0).getDate();
             const siswaKelas = DATA_MASTER.filter(s => s.kelas === className);
             const win = window.open('', '_blank');
-            win.document.write(`<html><head><title>Rekap Bulanan ${className}</title><style>table { width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 15px; font-family:sans-serif; } th, td { border: 1px solid black; padding: 4px; text-align: center; } .text-left { text-align: left; padding-left: 5px; } .alfa { background-color: #fce4e4; color: #cc0000; } header { text-align: center; } @media print { @page { size: landscape; } }</style></head><body style="padding:10px;"><header><h2 style="margin:0">REKAPITULASI ABSENSI BULANAN</h2><h3 style="margin:5px 0 uppercase">KELAS ${className} - ${monthNames[bulan]} ${tahun}</h3><p style="margin:0; font-size: 12px;">SMP NEGERI 2 PRINGKUKU</p></header><table><thead><tr><th rowspan="2">No</th><th rowspan="2" style="width:200px">Nama Siswa</th><th colspan="${daysInMonth}">Tanggal</th><th rowspan="2">H</th></tr><tr>${Array.from({length: daysInMonth}, (_, i) => `<th>${i+1}</th>`).join('')}</tr></thead><tbody>${siswaKelas.map((s, i) => { let totalHadir = 0; const rowDots = Array.from({length: daysInMonth}, (_, d) => { const tglCari = new Date(tahun, bulan, d + 1).toLocaleDateString('id-ID'); const isHadir = attendanceData.some(a => a.nis === s.nis && a.tgl === tglCari); if(isHadir) totalHadir++; return `<td class="${isHadir ? '' : 'alfa'}">${isHadir ? '✓' : '-'}</td>`; }).join(''); return `<tr><td>${i+1}</td><td class="text-left">${s.nama}</td>${rowDots}<td style="font-weight:bold">${totalHadir}</td></tr>`; }).join('')}</tbody></table><div style="margin-top:20px; float:right; text-align:center; font-size: 12px;"><p>Pringkuku, ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p><br><br><br><p><b>__________________________</b><br>Wali Kelas ${className}</p></div></body></html>`);
+            win.document.write(`<html><head><title>Rekap Bulanan ${className}</title><style>table { width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 15px; font-family:sans-serif; } th, td { border: 1px solid black; padding: 4px; text-align: center; } .text-left { text-align: left; padding-left: 5px; } .alfa { background-color: #fce4e4; color: #cc0000; } header { text-align: center; } @media print { @page { size: landscape; } }</style></head><body style="padding:10px;"><header><h2 style="margin:0">REKAPITULASI ABSENSI BULANAN</h2><h3 style="margin:5px 0 uppercase">KELAS ${className} - ${monthNames[bulan]} ${tahun}</h3><p style="margin:0; font-size: 12px;">SMP NEGERI 2 PRINGKUKU</p></header><table><thead><tr><th rowspan="2">No</th><th rowspan="2" style="width:200px">Nama Siswa</th><th colspan="${daysInMonth}">Tanggal</th><th rowspan="2">H</th></tr><tr>${Array.from({length: daysInMonth}, (_, i) => `<th>${i+1}</th>`).join('')}</tr></thead><tbody>${siswaKelas.map((s, i) => { let totalHadir = 0; const rowDots = Array.from({length: daysInMonth}, (_, d) => { const tglCari = new Date(tahun, bulan, d + 1).toLocaleDateString('id-ID'); const isHadir = attendanceData.some(a => {
+
+    if(a.nis !== s.nis) return false;
+
+    let tglObj;
+
+    if(a.tgl.includes('-')) {
+
+        tglObj = new Date(a.tgl);
+
+    } else if(a.tgl.includes('/')) {
+
+        const p = a.tgl.split('/');
+
+        tglObj = new Date(p[2], p[1]-1, p[0]);
+
+    } else {
+
+        return false;
+    }
+
+    return tglObj.toLocaleDateString('id-ID') === tglCari;
+
+}); if(isHadir) totalHadir++; return `<td class="${isHadir ? '' : 'alfa'}">${isHadir ? '✓' : '-'}</td>`; }).join(''); return `<tr><td>${i+1}</td><td class="text-left">${s.nama}</td>${rowDots}<td style="font-weight:bold">${totalHadir}</td></tr>`; }).join('')}</tbody></table><div style="margin-top:20px; float:right; text-align:center; font-size: 12px;"><p>Pringkuku, ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p><br><br><br><p><b>__________________________</b><br>Wali Kelas ${className}</p></div></body></html>`);
             win.document.close(); win.print();
         }
 document.getElementById('selectMonth').addEventListener('change', () => {
