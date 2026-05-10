@@ -225,29 +225,44 @@
                     <h3 class="font-black text-slate-400 uppercase text-[10px] tracking-[0.3em]">Monitoring Kelas</h3>
                     <div class="h-[1px] flex-grow bg-slate-200"></div>
                 </div>
-<div class="flex gap-4 mb-6">
-        <select id="selectMonth" class="px-4 py-3 rounded-xl border border-slate-200 font-bold">
-            <option value="0">Januari</option>
-            <option value="1">Februari</option>
-            <option value="2">Maret</option>
-            <option value="3">April</option>
-            <option value="4">Mei</option>
-            <option value="5">Juni</option>
-            <option value="6">Juli</option>
-            <option value="7">Agustus</option>
-            <option value="8">September</option>
-            <option value="9">Oktober</option>
-            <option value="10">November</option>
-            <option value="11">Desember</option>
-        </select>
+<div class="flex flex-wrap gap-4 mb-6">
 
-        <select id="selectYear" class="px-4 py-3 rounded-xl border border-slate-200 font-bold">
-            <option value="2026">2026</option>
-            <option value="2025">2025</option>
-            <option value="2024">2024</option>
-        </select>
-    </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6" id="rekapKelasContainer"></div>
+    <!-- TANGGAL -->
+    <select id="selectDate"
+        class="px-4 py-3 rounded-xl border border-slate-200 font-bold">
+
+    </select>
+
+    <!-- BULAN -->
+    <select id="selectMonth"
+        class="px-4 py-3 rounded-xl border border-slate-200 font-bold">
+
+        <option value="0">Januari</option>
+        <option value="1">Februari</option>
+        <option value="2">Maret</option>
+        <option value="3">April</option>
+        <option value="4">Mei</option>
+        <option value="5">Juni</option>
+        <option value="6">Juli</option>
+        <option value="7">Agustus</option>
+        <option value="8">September</option>
+        <option value="9">Oktober</option>
+        <option value="10">November</option>
+        <option value="11">Desember</option>
+
+    </select>
+
+    <!-- TAHUN -->
+    <select id="selectYear"
+        class="px-4 py-3 rounded-xl border border-slate-200 font-bold">
+
+        <option value="2026">2026</option>
+        <option value="2025">2025</option>
+        <option value="2024">2024</option>
+
+    </select>
+
+</div>                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6" id="rekapKelasContainer"></div>
                 
                 <div class="mt-12 text-center">
                     <button onclick="resetData()" class="text-[10px] text-red-400 font-bold hover:text-red-600 transition tracking-widest uppercase italic">
@@ -459,9 +474,11 @@ function ambilBulanTahun() {
 
     const btn = document.getElementById('toggleLogsBtn');
 
-    const bulan = parseInt(document.getElementById('selectMonth').value);
+    const tanggal = parseInt(document.getElementById('selectDate').value);
 
-    const tahun = parseInt(document.getElementById('selectYear').value);
+const bulan = parseInt(document.getElementById('selectMonth').value);
+
+const tahun = parseInt(document.getElementById('selectYear').value)
 
     const logs = attendanceData.filter(a => {
 
@@ -490,8 +507,9 @@ function ambilBulanTahun() {
             return false;
         }
 
-        return tglObj.getMonth() === bulan &&
-               tglObj.getFullYear() === tahun;
+       return tglObj.getDate() === tanggal &&
+       tglObj.getMonth() === bulan &&
+       tglObj.getFullYear() === tahun;
 
     });
 
@@ -577,9 +595,11 @@ function ambilBulanTahun() {
     }
 }
         function renderStats() {
-           const bulan = parseInt(document.getElementById('selectMonth').value);
+           const tanggal = parseInt(document.getElementById('selectDate').value);
 
-    const tahun = parseInt(document.getElementById('selectYear').value);
+const bulan = parseInt(document.getElementById('selectMonth').value);
+
+const tahun = parseInt(document.getElementById('selectYear').value);
 
     const filtered = attendanceData.filter(a => {
 
@@ -606,8 +626,9 @@ function ambilBulanTahun() {
             return false;
         }
 
-        return tglObj.getMonth() === bulan &&
-               tglObj.getFullYear() === tahun;
+        return tglObj.getDate() === tanggal &&
+       tglObj.getMonth() === bulan &&
+       tglObj.getFullYear() === tahun;
 
     });
 
@@ -709,7 +730,9 @@ function ambilBulanTahun() {
 
       function printClassDetail(className) {
 
-    const { bulan, tahun } = ambilBulanTahun();
+    const tanggal = parseInt(document.getElementById('selectDate').value);
+
+const { bulan, tahun } = ambilBulanTahun();
 
     const monthNames = [
         "Januari","Februari","Maret","April","Mei","Juni",
@@ -739,8 +762,9 @@ function ambilBulanTahun() {
             return false;
         }
 
-        return tglObj.getMonth() === parseInt(bulan) &&
-               tglObj.getFullYear() === parseInt(tahun);
+        return tglObj.getDate() === tanggal &&
+       tglObj.getMonth() === parseInt(bulan) &&
+       tglObj.getFullYear() === parseInt(tahun);
 
     });
 
@@ -788,7 +812,7 @@ function ambilBulanTahun() {
         <h2>REKAP HARIAN KELAS ${className}</h2>
 
         <p>
-            Bulan ${monthNames[bulan]} ${tahun}
+            Tanggal ${tanggal} ${monthNames[bulan]} ${tahun}
         </p>
 
     </div>
@@ -900,6 +924,53 @@ document.getElementById('selectYear').addEventListener('change', () => {
     renderStats();
 
 });
-    </script>
+// GENERATE PILIHAN TANGGAL
+function generateDateOptions() {
+
+    const selectDate = document.getElementById('selectDate');
+
+    selectDate.innerHTML = '';
+
+    for(let i = 1; i <= 31; i++) {
+
+        selectDate.innerHTML += `
+            <option value="${i}">
+                 ${i}
+            </option>
+        `;
+    }
+
+    // otomatis pilih tanggal hari ini
+    selectDate.value = new Date().getDate();
+}
+
+// JALANKAN SAAT APP DIMULAI
+generateDateOptions();
+
+document.getElementById('selectDate').addEventListener('change', () => {
+
+    renderLogs();
+
+    renderStats();
+
+});
+
+document.getElementById('selectMonth').addEventListener('change', () => {
+
+    renderLogs();
+
+    renderStats();
+
+});
+
+document.getElementById('selectYear').addEventListener('change', () => {
+
+    renderLogs();
+
+    renderStats();
+
+});
+
+</script>
 </body>
 </html>
